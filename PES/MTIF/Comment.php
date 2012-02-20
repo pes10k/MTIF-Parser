@@ -1,11 +1,11 @@
 <?php
 
 /**
- * MT2WP_MTIF_Comment class.
+ * PES_MTIF_Comment class.
  *
  * Represents a single comment for a Moveable Type blog post
  */
-class MT2WP_MTIF_Comment {
+class PES_MTIF_Comment {
 
   const PATTERN_AUTHOR = '/(?:^|\n)AUTHOR: (.*)\n/';
   const PATTERN_EMAIL = '/(?:^|\n)EMAIL: (.*)\n/';
@@ -17,7 +17,7 @@ class MT2WP_MTIF_Comment {
   /**
    * A reference to the post that this comment was left on
    *
-   * @var MT2WP_MTIF_Post|NULL
+   * @var PES_MTIF_Post|NULL
    * @access protected
    */
   protected $post;

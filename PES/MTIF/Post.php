@@ -1,6 +1,6 @@
 <?php
 
-class MT2WP_MTIF_Post {
+class PES_MTIF_Post {
 
   const PATTERN_AUTHOR = '/(?:^|\n)AUTHOR: (.*)\n/';
   const PATTERN_TITLE = '/(?:^|\n)TITLE: (.*)\n/';
@@ -62,7 +62,7 @@ class MT2WP_MTIF_Post {
   protected $seconday_categories = array();
   
   /**
-   * The posts status, one of the MT2WP_MTIF_Post::STATUS_* constants
+   * The posts status, one of the PES_MTIF_Post::STATUS_* constants
    * 
    * @var int
    * @access protected
@@ -145,7 +145,7 @@ class MT2WP_MTIF_Post {
   protected $excerpt = '';
   
   /**
-   * An array of MT2WP_MTIF_Comment objects representing zero or more comments
+   * An array of PES_MTIF_Comment objects representing zero or more comments
    * 
    * (default value: array())
    * 
@@ -234,7 +234,7 @@ class MT2WP_MTIF_Post {
       if ( ! empty($matches[1])) {
 
         foreach ($matches[1] as $item) {
-          $this->comments[] = new MT2WP_MTIF_Comment($item);
+          $this->comments[] = new PES_MTIF_Comment($item, $this);
         }
       }    
     }

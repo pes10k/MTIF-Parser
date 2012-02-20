@@ -1,6 +1,6 @@
 <?php
 
-class MT2WP_MTIF_Parser {
+class PES_MTIF_Parser {
 
   /**
    * File system pointer resource pointing to the MTIF export
@@ -20,6 +20,17 @@ class MT2WP_MTIF_Parser {
   protected $mtif_path;
 
   /**
+   * Convenience constructor to allow setting the path to the MTIF file
+   * on initilization.
+   */
+  public function __construct($path = FALSE) {
+
+    if ($path) {
+      $this->setMTIFPath($path);
+    }
+  }
+
+  /**
    * Iterates over the the MTIF export data and returns either an object representing
    * the next Post, or false if the data is not formatted correctly or we've reached
    * the end of the data
@@ -37,7 +48,7 @@ class MT2WP_MTIF_Parser {
       // see if it contains a valid post
       if ($line === '--------' . PHP_EOL) {
 
-        return $current_post = new MT2WP_MTIF_Post($current_post_contents);
+        return $current_post = new PES_MTIF_Post($current_post_contents);
       }
 
       $current_post_contents .= $line;
