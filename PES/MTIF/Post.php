@@ -14,110 +14,118 @@ class PES_MTIF_Post {
   const PATTERN_CATEGORY_SECONDARY = '/(?:^|\n)CATEGORY: (.*)/';
   const PATTERN_BODY = '/(?:^|\n)-----\nBODY:\n(.*?)\n-----\n/is';
   const PATTERN_EXTENDED_BODY = '/(?:^|\n)-----\nEXTENDED BODY:\n(.*?)\n-----\n/is';
-  const PATTERN_COMMENT = '/(?:^|\n)COMMENT:\n(.*?)\n-----\n/is';
+  const PATTERN_COMMENT = '/(?:^|\n)COMMENT:\n(.*?)\n-----/is';
 
   const STATUS_DRAFT = 1;
   const STATUS_PUBLISH = 2;
 
   /**
-   * Date the post was published on 
-   * 
+   * A unique id for the post.  This is not needed in most cases, since most of
+   * time posts are independent and don't need to know about each other, so
+   * they can be assigned arbitrarily by the importer.
+   */ 
+  protected $id = 0;
+
+  /**
+   * Date the post was published on
+   *
    * @var DateTime
    * @access protected
    */
   protected $date;
 
   /**
-   * Name of the author who created this post
-   * 
-   * @var string
+   * An object representing the author who created this post
+   *
+   * @var PES_MTIF_Author
    * @access protected
    */
-  protected $author = '';
-  
+  protected $author;
+
   /**
    * Title of the post
-   * 
+   *
    * @var string
    * @access protected
    */
-  protected $title = '';  
-  
+  protected $title = '';
+
   /**
    * The main category for this post
-   * 
+   *
    * @var string
    * @access protected
    */
   protected $primary_category = '';
-  
+
   /**
    * An array of strings of the categories this post belongs to
-   * 
+   *
    * (default value: array())
-   * 
+   *
    * @var array
    * @access protected
    */
   protected $seconday_categories = array();
-  
+
   /**
-   * The posts status, one of the PES_MTIF_Post::STATUS_* constants
-   * 
-   * @var int
+   * The posts status, one of the PES_MTIF_Post::STATUS_* constants.
+   * Alternatly, this can be a string if a custom / other status is needed.
+   *
+   * @var mixed
    * @access protected
    */
   protected $status = 0;
-  
+
   /**
-   * URL alias for the post title.  This is the BASENAME value 
+   * URL alias for the post title.  This is the BASENAME value
    * in the Movable Type Import Format
    * http://www.sixapart.com/movabletype/docs/mtimport
-   * 
+   *
    * (default value: '')
-   * 
+   *
    * @var string
    * @access protected
    */
   protected $url_alias = '';
-  
+
   /**
    * Whether the post allows comments (Defaults to FALSE)
-   * 
+   *
    * (default value: FALSE)
-   * 
+   *
    * @var bool
    * @access protected
    */
   protected $allows_comments = FALSE;
-  
+
   /**
    * Whether the post allows pings (Defaults to FALSE)
-   * 
+   *
    * (default value: FALSE)
-   * 
+   *
    * @var bool
    * @access protected
    */
   protected $allows_pings = FALSE;
-  
+
   /**
    * Whether or not to convert new lines to <br /> entities
-   * 
+   *
    * (default value: FALSE)
-   * 
+   *
    * @var bool
    * @access protected
    */
   protected $convert_breaks = FALSE;
-  
+
   /**
    * Teaser body of the post.  This will either be in HTML.  If
    * there is no extneded body, this will be the full version of
-   * the post  
-   * 
+   * the post
+   *
    * (default value: '')
-   * 
+   *
    * @var string
    * @access protected
    */
@@ -126,57 +134,79 @@ class PES_MTIF_Post {
   /**
    * Full body of the post.  This will either be in HTML or plain text.
    * This may be empty
-   * 
+   *
    * (default value: '')
-   * 
+   *
    * @var string
    * @access protected
    */
   protected $extended_body = '';
-  
+
   /**
    * Brief version of the post, used for teasers
-   * 
+   *
    * (default value: '')
-   * 
+   *
    * @var string
    * @access protected
    */
   protected $excerpt = '';
-  
+
+  /**
+   * Description of post type.  By default all MT items will be type 'post'.
+   *
+   * (default value: 'post')
+   *
+   * @var string
+   * @access protected
+   */
+  protected $post_type = 'post';
+
   /**
    * An array of PES_MTIF_Comment objects representing zero or more comments
-   * 
+   *
    * (default value: array())
-   * 
+   *
    * @var array
    * @access protected
    */
   protected $comments = array();
-  
+
+  /**
+   * The order that the given post should appear in listings in WP.  Note that
+   * most data sources (such as MT data) won't have this information.
+   * 
+   * (default value: 0)
+   * 
+   * @var int
+   * @access protected
+   */
+  protected $menu_order = 0;
+
   public function __construct($string = '') {
 
     $this->date = new DateTime();
+    $this->author = new PES_MTIF_Author('');
 
     if ( ! empty($string)) {
       $this->parseString($string);
-    }    
+    }
   }
-  
+
   /**
    * Takes a string describing a single post in the MTIF format as described here:
    * http://www.sixapart.com/movabletype/docs/mtimport
-   * 
+   *
    * @access public
    * @param string $string
    * @return bool
    */
   public function parseString($string) {
-    
+
     $matches = array();
-    
+
     if (preg_match(self::PATTERN_AUTHOR, $string, $matches) === 1) {
-      $this->author = $matches[1];
+      $this->author = new PES_MTIF_Author($matches[1]);
     }
 
     if (preg_match(self::PATTERN_TITLE, $string, $matches) === 1) {
@@ -208,11 +238,11 @@ class PES_MTIF_Post {
         }
       }
     }
- 
+
     if (preg_match(self::PATTERN_BODY, $string, $matches) === 1) {
       $this->body = $matches[1];
     }
-    
+
     if (preg_match(self::PATTERN_EXTENDED_BODY, $string, $matches) === 1) {
       $this->extended_body = $matches[1];
     }
@@ -228,7 +258,7 @@ class PES_MTIF_Post {
     if (preg_match(self::PATTERN_CONVERT_BREAKS, $string, $matches) === 1) {
       $this->convert_breaks = trim($matches[1]) === '1';
     }
-    
+
     if (preg_match_all(self::PATTERN_COMMENT, $string, $matches) > 0) {
 
       if ( ! empty($matches[1])) {
@@ -236,62 +266,179 @@ class PES_MTIF_Post {
         foreach ($matches[1] as $item) {
           $this->comments[] = new PES_MTIF_Comment($item, $this);
         }
-      }    
+      }
     }
   }
+
+  // ====================
+  // ! Getter / Setters
+  // ====================
+  public function id () {
+    return $this->id;
+  }
+
+  public function setId ($an_id) {
+    $this->id = $an_id;
+    return $this;
+  } 
   
-  // ==================== 
-  // ! Getter / Setters   
-  // ==================== 
-  public function comments() {
+  public function comments () {
     return $this->comments;
   }
-  
-  public function date() {
+
+  public function newComment () {
+    $a_comment = new PES_MTIF_Comment();
+    $a_comment->setPost($this);
+    $this->comments[] = $a_comment;
+    return $a_comment;
+  }
+
+  public function date () {
     return $this->date;
   }
-  
-  public function author() {
+
+  public function setDate ($a_date) {
+    $this->date = $a_date;
+    return $this;
+  }
+
+  public function author () {
     return $this->author;
   }
-  
-  public function title() {
+
+  public function setAuthor ($an_author) {
+
+    if (is_string($an_author)) {
+
+      $this->author = new PES_MTIF_Author($an_author);
+
+    } else {
+
+      $this->author = $an_author;
+    }
+
+    return $this;
+  }
+
+  public function title () {
     return $this->title;
   }
-  
-  public function primaryCategory() {
+
+  public function setTitle ($a_title) {
+    $this->title = $a_title;
+    return $this;
+  }
+
+  public function primaryCategory () {
     return $this->primary_category;
   }
-  
-  public function secondayCategories() {
+
+  public function setPrimaryCategory ($a_category) {
+    $this->primary_category = $a_category;
+    return $this;
+  }
+
+  public function secondayCategories () {
     return $this->seconday_categories;
   }
-  
-  public function status() {
+
+  public function addSecondaryCategory ($a_category) {
+    $this->seconday_categories[] = $a_category;
+    return $this;
+  }
+
+  public function status () {
     return $this->status;
   }
-  
-  public function urlAlias() {
+
+  public function setStatus ($a_status) {
+    $this->status = $a_status;
+    return $this;
+  }
+
+  public function urlAlias () {
     return $this->url_alias;
   }
-  
-  public function allowsComments() {
+
+  public function setUrlAlias ($an_alias) {
+    $this->url_alias = $an_alias;
+    return $this;
+  }
+
+  public function allowsComments () {
     return $this->allows_comments;
   }
-  
-  public function allowsPings() {
+
+  public function setAllowsComments ($allows_comments) {
+    $this->allows_comments = $allows_comments;
+    return $this;
+  }
+
+  public function allowsPings () {
     return $this->allows_pings;
   }
-  
-  public function convertBreaks() {
+
+  public function setAllowsPings ($allows_pings) {
+    $this->allows_pings = $allows_pings;
+    return $this;
+  }
+
+  public function convertBreaks () {
     return $this->convert_breaks;
   }
-  
-  public function body() {
-    return empty($this->extended_body) ? $this->body : $this->extended_body;
+
+  public function setConvertBreaks ($convert_breaks) {
+    $this->convert_breaks = $convert_breaks;
+    return $this;
   }
-  
-  public function excerpt() {
-    return empty($this->extended_body) ? $this->excerpt : $this->body;
+
+  public function body () {
+    return empty($this->extended_body)
+      ? $this->normalizeEndlines($this->body)
+      : $this->normalizeEndlines($this->extended_body);
+  }
+
+  public function setBody ($body) {
+    $this->body = $body;
+    return $this;
+  }
+
+  public function excerpt () {
+    return empty($this->extended_body)
+      ? $this->normalizeEndlines($this->excerpt)
+      : $this->normalizeEndlines($this->body);
+  }
+
+  public function setExcerpt ($excerpt) {
+    $this->excerpt = $excerpt;
+    return $this;
+  }
+
+  public function type () {
+    return $this->post_type;
+  }
+
+  public function setType ($a_type) {
+    $this->post_type = $a_type;
+    return $this;
+  }
+
+  public function menuOrder () {
+    return $this->menu_order;
+  }
+
+  public function setMenuOrder ($an_order) {
+    $this->menu_order = $an_order;
+    return $this;
+  }
+
+  public function postParent () {
+    return FALSE;
+  }
+
+  private function normalizeEndlines ($text) {
+    $text = str_replace("\r\n", "\n", utf8_encode($text));
+    $text = str_replace("\r", "\n", $text);
+    return $text;
   }
 }

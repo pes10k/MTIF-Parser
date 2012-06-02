@@ -127,28 +127,63 @@ class PES_MTIF_Comment {
   public function post() {
     return $this->post;
   }
-  
+
+  public function setPost(PES_MITF_Post $a_post) {
+    $this->post = $a_post;
+    return $this;
+  }
+
   public function author() {
     return $this->author;
   }
-  
+
+  public function setAuthor($an_author) {
+    $this->author = $an_author;
+    return $this;
+  }
+
   public function email() {
     return $this->email;
+  }
+  
+  public function setEmail($an_email) {
+    $this->email = $an_email;
+    return $this;
   }
   
   public function url() {
     return $this->url;
   }
   
+  public function setUrl($a_url) {
+    $this->url = $a_url;
+    return $this;
+  }
+  
   public function ip() {
     return $this->ip;
+  }
+  
+  public function setIp($an_ip) {
+    $this->ip = $an_ip;
+    return $this;
   }
   
   public function date() {
     return $this->date;
   }
   
+  public function setDate(DateTime $a_date) {
+    $this->date = $a_date;
+    return $this;
+  }
+  
   public function body() {
     return $this->body;
+  }
+  
+  public function setBody($body) {
+    $this->body = $body;
+    return $this;
   }
 }
