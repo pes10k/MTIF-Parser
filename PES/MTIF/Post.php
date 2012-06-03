@@ -12,9 +12,9 @@ class PES_MTIF_Post {
   const PATTERN_CONVERT_BREAKS = '/(?:^|\n)CONVERT BREAKS: (.*)\n/';
   const PATTERN_CATEGORY_PRIMARY = '/(?:^|\n)PRIMARY CATEGORY: (.*)/';
   const PATTERN_CATEGORY_SECONDARY = '/(?:^|\n)CATEGORY: (.*)/';
-  const PATTERN_BODY = '/(?:^|\n)-----\nBODY:\n(.*?)\n-----\n/is';
-  const PATTERN_EXTENDED_BODY = '/(?:^|\n)-----\nEXTENDED BODY:\n(.*?)\n-----\n/is';
-  const PATTERN_COMMENT = '/(?:^|\n)COMMENT:\n(.*?)\n-----/is';
+  const PATTERN_BODY = '/^BODY:\n(.*?)\n-----$/ism';
+  const PATTERN_EXTENDED_BODY = '/^EXTENDED BODY:\n(.*?)\n-----$/ism';
+  const PATTERN_COMMENT = '/^COMMENT:\n(.*?)\n-----$/ism';
 
   const STATUS_DRAFT = 1;
   const STATUS_PUBLISH = 2;
