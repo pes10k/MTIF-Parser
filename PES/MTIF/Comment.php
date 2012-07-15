@@ -69,7 +69,7 @@ class Comment {
    *
    * (default value: '')
    *
-   * @var DateTime
+   * @var \DateTime
    * @access protected
    */
   protected $date;
@@ -119,7 +119,7 @@ class Comment {
     }
 
     if (preg_match(self::PATTERN_DATE, $string, $matches) === 1) {
-      $this->date = new DateTime($matches[1]);
+      $this->date = new \DateTime($matches[1]);
     }
   }
   
