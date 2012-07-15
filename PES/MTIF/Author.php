@@ -1,5 +1,7 @@
 <?php
 
+namespace PES\MTIF;
+
 /**
  * @file
  * This class represents a single author from a data source that provides
@@ -12,7 +14,7 @@
  * authors, none of the below fields besides "login" are guaranteed to exist.
  */
 
-class PES_MTIF_Author {
+class Author {
 
   /**
    * The unique ID of the author record, if the represented source supports

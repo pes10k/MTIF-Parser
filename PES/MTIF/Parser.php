@@ -1,6 +1,8 @@
 <?php
 
-class PES_MTIF_Parser {
+namespace PES\MTIF;
+
+class Parser {
 
   /**
    * File system pointer resource pointing to the MTIF export
@@ -48,7 +50,7 @@ class PES_MTIF_Parser {
       // see if it contains a valid post
       if ($line === '--------' . PHP_EOL) {
 
-        return $current_post = new PES_MTIF_Post($current_post_contents);
+        return $current_post = new Post($current_post_contents);
       }
 
       $current_post_contents .= $line;

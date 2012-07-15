@@ -1,11 +1,13 @@
 <?php
 
+namespace PES\MTIF;
+
 /**
  * PES_MTIF_Comment class.
  *
  * Represents a single comment for a Moveable Type blog post
  */
-class PES_MTIF_Comment {
+class Comment {
 
   const PATTERN_AUTHOR = '/(?:^|\n)AUTHOR: (.*)\n/';
   const PATTERN_EMAIL = '/(?:^|\n)EMAIL: (.*)\n/';
@@ -128,7 +130,7 @@ class PES_MTIF_Comment {
     return $this->post;
   }
 
-  public function setPost(PES_MITF_Post $a_post) {
+  public function setPost(\PES\MTIF\Post $a_post) {
     $this->post = $a_post;
     return $this;
   }
@@ -173,7 +175,7 @@ class PES_MTIF_Comment {
     return $this->date;
   }
   
-  public function setDate(DateTime $a_date) {
+  public function setDate(\DateTime $a_date) {
     $this->date = $a_date;
     return $this;
   }

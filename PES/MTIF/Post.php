@@ -1,6 +1,8 @@
 <?php
 
-class PES_MTIF_Post {
+namespace PES\MTIF;
+
+class Post {
 
   const PATTERN_AUTHOR = '/(?:^|\n)AUTHOR: (.*)\n/';
   const PATTERN_TITLE = '/(?:^|\n)TITLE: (.*)\n/';
@@ -29,7 +31,7 @@ class PES_MTIF_Post {
   /**
    * Date the post was published on
    *
-   * @var DateTime
+   * @var \DateTime
    * @access protected
    */
   protected $date;
@@ -37,7 +39,7 @@ class PES_MTIF_Post {
   /**
    * An object representing the author who created this post
    *
-   * @var PES_MTIF_Author
+   * @var \PES\MTIF\Author
    * @access protected
    */
   protected $author;
@@ -69,7 +71,7 @@ class PES_MTIF_Post {
   protected $seconday_categories = array();
 
   /**
-   * The posts status, one of the PES_MTIF_Post::STATUS_* constants.
+   * The posts status, one of the \PES\MTIF\Post::STATUS_* constants.
    * Alternatly, this can be a string if a custom / other status is needed.
    *
    * @var mixed
@@ -163,7 +165,7 @@ class PES_MTIF_Post {
   protected $post_type = 'post';
 
   /**
-   * An array of PES_MTIF_Comment objects representing zero or more comments
+   * An array of \PES\MTIF\Comment objects representing zero or more comments
    *
    * (default value: array())
    *
@@ -185,8 +187,8 @@ class PES_MTIF_Post {
 
   public function __construct($string = '') {
 
-    $this->date = new DateTime();
-    $this->author = new PES_MTIF_Author('');
+    $this->date = new \DateTime();
+    $this->author = new Author('');
 
     if ( ! empty($string)) {
       $this->parseString($string);
@@ -206,7 +208,7 @@ class PES_MTIF_Post {
     $matches = array();
 
     if (preg_match(self::PATTERN_AUTHOR, $string, $matches) === 1) {
-      $this->author = new PES_MTIF_Author($matches[1]);
+      $this->author = new Author($matches[1]);
     }
 
     if (preg_match(self::PATTERN_TITLE, $string, $matches) === 1) {
@@ -214,11 +216,13 @@ class PES_MTIF_Post {
     }
 
     if (preg_match(self::PATTERN_DATE, $string, $matches) === 1) {
-      $this->date = new DateTime($matches[1]);
+      $this->date = new \DateTime($matches[1]);
     }
 
     if (preg_match(self::PATTERN_STATUS, $string, $matches) === 1) {
-      $this->status = strtolower($matches[1]) === 'draft' ? self::STATUS_DRAFT : self::STATUS_PUBLISH;
+      $this->status = strtolower($matches[1]) === 'draft'
+        ? self::STATUS_DRAFT
+        : self::STATUS_PUBLISH;
     }
 
     if (preg_match(self::PATTERN_URL, $string, $matches) === 1) {
@@ -264,7 +268,7 @@ class PES_MTIF_Post {
       if ( ! empty($matches[1])) {
 
         foreach ($matches[1] as $item) {
-          $this->comments[] = new PES_MTIF_Comment($item, $this);
+          $this->comments[] = new Comment($item, $this);
         }
       }
     }
@@ -287,7 +291,7 @@ class PES_MTIF_Post {
   }
 
   public function newComment () {
-    $a_comment = new PES_MTIF_Comment();
+    $a_comment = new Comment();
     $a_comment->setPost($this);
     $this->comments[] = $a_comment;
     return $a_comment;
@@ -310,7 +314,7 @@ class PES_MTIF_Post {
 
     if (is_string($an_author)) {
 
-      $this->author = new PES_MTIF_Author($an_author);
+      $this->author = new Author($an_author);
 
     } else {
 
