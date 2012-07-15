@@ -3,7 +3,7 @@
 namespace PES\MTIF;
 
 /**
- * PES_MTIF_Comment class.
+ * \PES\MTIF\Comment class.
  *
  * Represents a single comment for a Moveable Type blog post
  */
@@ -19,7 +19,7 @@ class Comment {
   /**
    * A reference to the post that this comment was left on
    *
-   * @var PES_MTIF_Post|NULL
+   * @var \PES\MTIF\Post|NULL
    * @access protected
    */
   protected $post;
