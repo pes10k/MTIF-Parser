@@ -16,11 +16,11 @@ Using MITF Parser
 ---
 Its dead simple.
 
-    $parser = new PES_MTIF_Parser();
+    $parser = new \PES\MTIF\Parser();
     $parser->setMTIFPath('./path/to/data.txt');
 
     while ($post = $parser->next()) {
-    
+
         // each $post here is an instantiated PES_MTIF_Post object,
         // that encapsulates data about each post, including its title,
         // original URL, comments, etc
