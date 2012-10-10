@@ -14,9 +14,11 @@ class Post {
   const PATTERN_CONVERT_BREAKS = '/(?:^|\n)CONVERT BREAKS: (.*)\n/';
   const PATTERN_CATEGORY_PRIMARY = '/(?:^|\n)PRIMARY CATEGORY: (.*)/';
   const PATTERN_CATEGORY_SECONDARY = '/(?:^|\n)CATEGORY: (.*)/';
+  const PATTERN_KEYWORDS = '/^KEYWORDS:\n(.*?)$/m';
   const PATTERN_BODY = '/^BODY:\n(.*?)\n-----$/ism';
   const PATTERN_EXTENDED_BODY = '/^EXTENDED BODY:\n(.*?)\n-----$/ism';
   const PATTERN_COMMENT = '/^COMMENT:\n(.*?)\n-----$/ism';
+  const PATTERN_EXCERPT = '/^EXCERPT:\n(.*?)\n-----$/ism';
 
   const STATUS_DRAFT = 1;
   const STATUS_PUBLISH = 2;
@@ -25,7 +27,7 @@ class Post {
    * A unique id for the post.  This is not needed in most cases, since most of
    * time posts are independent and don't need to know about each other, so
    * they can be assigned arbitrarily by the importer.
-   */ 
+   */
   protected $id = 0;
 
   /**
@@ -177,13 +179,21 @@ class Post {
   /**
    * The order that the given post should appear in listings in WP.  Note that
    * most data sources (such as MT data) won't have this information.
-   * 
+   *
    * (default value: 0)
-   * 
+   *
    * @var int
    * @access protected
    */
   protected $menu_order = 0;
+
+  /**
+   * A collection of zero or more keywords, describing the post.  Each keyword
+   * is represented by a string
+   *
+   * @var array
+   */
+  protected $keywords = array();
 
   public function __construct($string = '') {
 
@@ -206,6 +216,10 @@ class Post {
   public function parseString($string) {
 
     $matches = array();
+
+    // Normalize our line endings...
+    $string = str_replace("\r\n", "\n", $string);
+    $string = str_replace("\r", "\n", $string);
 
     if (preg_match(self::PATTERN_AUTHOR, $string, $matches) === 1) {
       $this->author = new Author($matches[1]);
@@ -243,12 +257,25 @@ class Post {
       }
     }
 
+    if (preg_match(self::PATTERN_KEYWORDS, $string, $matches)) {
+      $keywords = explode(',', $matches[1]);
+      if ( ! empty($keywords)) {
+        foreach ($keywords as $a_keyword) {
+          $this->keywords[] = trim($a_keyword);
+        }
+      }
+    }
+
     if (preg_match(self::PATTERN_BODY, $string, $matches) === 1) {
       $this->body = $matches[1];
     }
 
     if (preg_match(self::PATTERN_EXTENDED_BODY, $string, $matches) === 1) {
       $this->extended_body = $matches[1];
+    }
+
+    if (preg_match(self::PATTERN_EXCERPT, $string, $matches) === 1) {
+      $this->excerpt = $matches[1];
     }
 
     if (preg_match(self::PATTERN_ALLOW_COMMENTS, $string, $matches) === 1) {
@@ -260,7 +287,8 @@ class Post {
     }
 
     if (preg_match(self::PATTERN_CONVERT_BREAKS, $string, $matches) === 1) {
-      $this->convert_breaks = trim($matches[1]) === '1';
+      $convert_break_setting = $matches[1];
+      $this->convert_breaks = ($convert_break_setting !== 'wysiwyg' && $convert_break_setting !== '__default__');
     }
 
     if (preg_match_all(self::PATTERN_COMMENT, $string, $matches) > 0) {
@@ -284,8 +312,8 @@ class Post {
   public function setId ($an_id) {
     $this->id = $an_id;
     return $this;
-  } 
-  
+  }
+
   public function comments () {
     return $this->comments;
   }
@@ -440,9 +468,21 @@ class Post {
     return FALSE;
   }
 
+  public function keywords () {
+    return $this->keywords;
+  }
+
+  public function tags () {
+    return $this->keywords();
+  }
+
+  public function setKeywords ($keywords) {
+    $this->keywords = $keywords;
+    return $this;
+  }
+
   private function normalizeEndlines ($text) {
-    $text = str_replace("\r\n", "\n", utf8_encode($text));
-    $text = str_replace("\r", "\n", $text);
+    $text = preg_replace("/\r\n|\r/", "\n", $text);
     return $text;
   }
 }
