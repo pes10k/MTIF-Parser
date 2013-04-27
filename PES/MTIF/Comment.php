@@ -121,11 +121,14 @@ class Comment {
     if (preg_match(self::PATTERN_DATE, $string, $matches) === 1) {
       $this->date = new \DateTime($matches[1]);
     }
+    else {
+      var_dump($string);
+    }
   }
-  
-  // ==================== 
-  // ! Getter / Setters   
-  // ==================== 
+
+  // ====================
+  // ! Getter / Setters
+  // ====================
   public function post() {
     return $this->post;
   }
@@ -147,43 +150,43 @@ class Comment {
   public function email() {
     return $this->email;
   }
-  
+
   public function setEmail($an_email) {
     $this->email = $an_email;
     return $this;
   }
-  
+
   public function url() {
     return $this->url;
   }
-  
+
   public function setUrl($a_url) {
     $this->url = $a_url;
     return $this;
   }
-  
+
   public function ip() {
     return $this->ip;
   }
-  
+
   public function setIp($an_ip) {
     $this->ip = $an_ip;
     return $this;
   }
-  
+
   public function date() {
     return $this->date;
   }
-  
+
   public function setDate(\DateTime $a_date) {
     $this->date = $a_date;
     return $this;
   }
-  
+
   public function body() {
     return $this->body;
   }
-  
+
   public function setBody($body) {
     $this->body = $body;
     return $this;

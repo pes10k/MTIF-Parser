@@ -17,7 +17,7 @@ class Post {
   const PATTERN_KEYWORDS = '/^KEYWORDS:\n(.*?)$/m';
   const PATTERN_BODY = '/^BODY:\n(.*?)\n-----$/ism';
   const PATTERN_EXTENDED_BODY = '/^EXTENDED BODY:\n(.*?)\n-----$/ism';
-  const PATTERN_COMMENT = '/^COMMENT:\n(.*?)\n-----$/ism';
+  const PATTERN_COMMENT = '/^COMMENT:\n(.*?)\n(-----\n\nCOMMENT:|--------^|--------\nAUTHOR:)$/ism';
   const PATTERN_EXCERPT = '/^EXCERPT:\n(.*?)\n-----$/ism';
 
   const STATUS_DRAFT = 1;
@@ -261,7 +261,10 @@ class Post {
       $keywords = explode(',', $matches[1]);
       if ( ! empty($keywords)) {
         foreach ($keywords as $a_keyword) {
-          $this->keywords[] = trim($a_keyword);
+          $a_keyword = trim($a_keyword);
+          if (!empty($a_keyword)) {
+            $this->keywords[] = $a_keyword;
+          }
         }
       }
     }
@@ -291,14 +294,13 @@ class Post {
       $this->convert_breaks = ($convert_break_setting !== 'wysiwyg' && $convert_break_setting !== '__default__');
     }
 
-    if (preg_match_all(self::PATTERN_COMMENT, $string, $matches) > 0) {
+    $offset = 0;
 
-      if ( ! empty($matches[1])) {
+    while (preg_match(self::PATTERN_COMMENT, $string, $matches, PREG_OFFSET_CAPTURE, $offset)) {
 
-        foreach ($matches[1] as $item) {
-          $this->comments[] = new Comment($item, $this);
-        }
-      }
+      $comment_body = $matches[1][0];
+      $offset = $matches[1][1] + mb_strlen($comment_body);
+      $this->comments[] = new Comment($comment_body, $this);
     }
   }
 
